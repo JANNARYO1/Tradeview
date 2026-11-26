@@ -2,43 +2,45 @@
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Tradeview — Community Market Analysis Terminal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
   <style>
-    * { box-sizing: border-box; user-select: none; }
+    * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
     body { background-color: #131722; color: #d1d4dc; font-family: -apple-system, BlinkMacSystemFont, "Trebuchet MS", Roboto, Ubuntu, sans-serif; margin: 0; overflow: hidden; }
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: #131722; }
     ::-webkit-scrollbar-thumb { background: #2a2e39; border-radius: 3px; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     .tool-btn { transition: all 0.12s ease; }
     .tool-btn:hover { background-color: #2a2e39; color: #ffffff; }
     .tool-btn.active { background-color: #2962ff26; color: #2962ff; border-right: 2px solid #2962ff; }
     input, textarea, select { user-select: text; }
   </style>
 </head>
-<body class="h-screen w-screen flex flex-col">
+<body class="h-[100dvh] w-screen flex flex-col">
 
-  <!-- TOP NAVIGATION BAR -->
-  <header class="h-12 bg-[#131722] border-b border-[#2a2e39] flex items-center justify-between px-3 shrink-0 z-20">
-    <div class="flex items-center space-x-2">
+  <!-- TOP NAVIGATION BAR (MOBILE-RESPONSIVE HORIZONTAL SCROLL) -->
+  <header class="h-12 bg-[#131722] border-b border-[#2a2e39] flex items-center justify-between px-2 sm:px-3 shrink-0 z-20 gap-2">
+    <div class="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1">
       <!-- Brand -->
-      <div class="flex items-center space-x-2 pr-3 border-r border-[#2a2e39]">
+      <div class="flex items-center space-x-2 pr-2 border-r border-[#2a2e39] shrink-0">
         <div class="w-7 h-7 rounded bg-[#2962ff] flex items-center justify-center font-bold text-white text-sm tracking-tighter">TV</div>
-        <span class="font-semibold text-white text-sm hidden sm:inline">Tradeview</span>
+        <span class="font-semibold text-white text-sm hidden md:inline">Tradeview</span>
       </div>
 
       <!-- Symbol Search -->
-      <div class="relative flex items-center">
+      <div class="relative flex items-center shrink-0">
         <input id="symbolInput" type="text" value="BTCUSDT" spellcheck="false"
-          class="bg-[#1e222d] text-white text-xs font-bold uppercase px-2.5 py-1.5 rounded border border-[#2a2e39] focus:border-[#2962ff] focus:outline-none w-28"
+          class="bg-[#1e222d] text-white text-xs font-bold uppercase px-2 py-1.5 rounded border border-[#2a2e39] focus:border-[#2962ff] focus:outline-none w-24 sm:w-28"
           placeholder="Symbol..." />
         <button id="loadSymbolBtn" class="ml-1 px-2 py-1.5 bg-[#2a2e39] hover:bg-[#363a45] text-xs rounded text-white font-medium">Load</button>
       </div>
 
       <!-- Timeframes -->
-      <div id="timeframeGroup" class="flex items-center space-x-0.5 border-l border-[#2a2e39] pl-2">
+      <div id="timeframeGroup" class="flex items-center space-x-0.5 border-l border-[#2a2e39] pl-2 shrink-0">
         <button data-tf="1m" class="tf-btn px-2 py-1 text-xs rounded hover:bg-[#2a2e39] text-[#787b86]">1m</button>
         <button data-tf="5m" class="tf-btn px-2 py-1 text-xs rounded hover:bg-[#2a2e39] text-[#787b86]">5m</button>
         <button data-tf="15m" class="tf-btn px-2 py-1 text-xs rounded hover:bg-[#2a2e39] text-[#787b86]">15m</button>
@@ -48,96 +50,95 @@
       </div>
 
       <!-- Indicators -->
-      <div class="flex items-center space-x-1 border-l border-[#2a2e39] pl-2">
-        <button id="toggleSmaBtn" class="px-2 py-1 text-xs rounded border border-[#2a2e39] bg-[#1e222d] text-[#f59e0b] hover:bg-[#2a2e39]">SMA 20</button>
-        <button id="toggleEmaBtn" class="px-2 py-1 text-xs rounded border border-[#2a2e39] bg-[#1e222d] text-[#3b82f6] hover:bg-[#2a2e39]">EMA 50</button>
-        <button id="toggleRsiBtn" class="px-2 py-1 text-xs rounded border border-[#2a2e39] bg-[#1e222d] text-[#a855f7] hover:bg-[#2a2e39]">RSI 14</button>
+      <div class="flex items-center space-x-1 border-l border-[#2a2e39] pl-2 shrink-0">
+        <button id="toggleSmaBtn" class="px-2 py-1 text-xs rounded border border-[#2a2e39] bg-[#1e222d] text-[#f59e0b] hover:bg-[#2a2e39]">SMA</button>
+        <button id="toggleEmaBtn" class="px-2 py-1 text-xs rounded border border-[#2a2e39] bg-[#1e222d] text-[#3b82f6] hover:bg-[#2a2e39]">EMA</button>
+        <button id="toggleRsiBtn" class="px-2 py-1 text-xs rounded border border-[#2a2e39] bg-[#1e222d] text-[#a855f7] hover:bg-[#2a2e39]">RSI</button>
       </div>
     </div>
 
-    <!-- Right Controls -->
-    <div class="flex items-center space-x-2">
-      <span id="feedStatus" class="text-[11px] px-2 py-0.5 rounded bg-[#08998126] text-[#089981] flex items-center gap-1.5">
+    <!-- Right Controls (Always Pinned on Mobile) -->
+    <div class="flex items-center space-x-1.5 shrink-0">
+      <span id="feedStatus" class="hidden sm:flex text-[11px] px-2 py-0.5 rounded bg-[#08998126] text-[#089981] items-center gap-1.5">
         <span class="w-1.5 h-1.5 rounded-full bg-[#089981] animate-pulse"></span> LIVE
       </span>
-      <button id="shareBtn" class="px-3 py-1.5 bg-[#2962ff] hover:bg-[#1e53e5] text-white text-xs font-semibold rounded flex items-center gap-1.5">
+      <button id="shareBtn" title="Share Setup Link" class="px-2.5 py-1.5 bg-[#2962ff] hover:bg-[#1e53e5] text-white text-xs font-semibold rounded flex items-center gap-1">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
-        Share Setup
+        <span class="hidden sm:inline">Share</span>
       </button>
-      <!-- Toggle Right Sidebar (Watchlist & Community Panel) -->
-      <button id="toggleSidebarBtn" title="Collapse / Expand Watchlist & Panel (Alt+W)"
+      <button id="toggleSidebarBtn" title="Toggle Watchlist & Community Panel"
         class="p-1.5 rounded border border-[#2a2e39] bg-[#1e222d] hover:bg-[#2a2e39] text-[#2962ff] transition flex items-center gap-1 text-xs">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <rect x="3" y="4" width="18" height="16" rx="2" stroke-width="1.8"/>
           <path stroke-width="1.8" d="M15 4v16"/>
         </svg>
-        <span class="hidden md:inline font-medium" id="sidebarToggleLabel">Panel</span>
+        <span class="hidden md:inline font-medium">Panel</span>
       </button>
     </div>
   </header>
 
   <!-- MAIN WORKSPACE -->
-  <div class="flex-1 flex overflow-hidden">
+  <div class="flex-1 flex overflow-hidden relative">
 
     <!-- LEFT DRAWING TOOLBAR (SHAPES & LINES) -->
-    <aside class="w-12 bg-[#131722] border-r border-[#2a2e39] flex flex-col items-center py-2 space-y-1 shrink-0 z-20">
-      <button data-tool="cursor" title="Crosshair / Select (Esc)" class="tool-btn active w-10 h-9 rounded flex items-center justify-center text-[#d1d4dc]">
+    <aside class="w-11 sm:w-12 bg-[#131722] border-r border-[#2a2e39] flex flex-col items-center py-1.5 space-y-1 shrink-0 z-20 overflow-y-auto no-scrollbar">
+      <button data-tool="cursor" title="Crosshair / Select & Drag" class="tool-btn active w-9 sm:w-10 h-9 rounded flex items-center justify-center text-[#d1d4dc] shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4v16m8-8H4"/></svg>
       </button>
 
-      <div class="w-6 border-t border-[#2a2e39] my-1"></div>
+      <div class="w-6 border-t border-[#2a2e39] my-0.5 shrink-0"></div>
 
       <!-- Trendline -->
-      <button data-tool="trendline" title="Trendline (2 clicks)" class="tool-btn w-10 h-9 rounded flex items-center justify-center text-[#787b86]">
+      <button data-tool="trendline" title="Trendline (2 points)" class="tool-btn w-9 sm:w-10 h-9 rounded flex items-center justify-center text-[#787b86] shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="19" r="2" stroke-width="1.8"/><circle cx="19" cy="5" r="2" stroke-width="1.8"/><path stroke-linecap="round" stroke-width="1.8" d="M6.5 17.5L17.5 6.5"/></svg>
       </button>
 
       <!-- Extended Ray -->
-      <button data-tool="ray" title="Extended Ray (2 clicks)" class="tool-btn w-10 h-9 rounded flex items-center justify-center text-[#787b86]">
+      <button data-tool="ray" title="Extended Ray (2 points)" class="tool-btn w-9 sm:w-10 h-9 rounded flex items-center justify-center text-[#787b86] shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="19" r="2" stroke-width="1.8"/><circle cx="13" cy="11" r="2" stroke-width="1.8"/><path stroke-linecap="round" stroke-width="1.8" d="M6.5 17.5L21 3"/></svg>
       </button>
 
       <!-- Horizontal Line -->
-      <button data-tool="hline" title="Horizontal Line (1 click)" class="tool-btn w-10 h-9 rounded flex items-center justify-center text-[#787b86]">
+      <button data-tool="hline" title="Horizontal Line (1 tap)" class="tool-btn w-9 sm:w-10 h-9 rounded flex items-center justify-center text-[#787b86] shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2" stroke-width="1.8"/><path stroke-linecap="round" stroke-width="1.8" d="M3 12h18"/></svg>
       </button>
 
       <!-- Vertical Line -->
-      <button data-tool="vline" title="Vertical Line (1 click)" class="tool-btn w-10 h-9 rounded flex items-center justify-center text-[#787b86]">
+      <button data-tool="vline" title="Vertical Line (1 tap)" class="tool-btn w-9 sm:w-10 h-9 rounded flex items-center justify-center text-[#787b86] shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2" stroke-width="1.8"/><path stroke-linecap="round" stroke-width="1.8" d="M12 3v18"/></svg>
       </button>
 
-      <div class="w-6 border-t border-[#2a2e39] my-1"></div>
+      <div class="w-6 border-t border-[#2a2e39] my-0.5 shrink-0"></div>
 
       <!-- Rectangle / Zone -->
-      <button data-tool="rect" title="Rectangle / Supply & Demand Zone (2 clicks)" class="tool-btn w-10 h-9 rounded flex items-center justify-center text-[#787b86]">
+      <button data-tool="rect" title="Rectangle / Zone (2 points)" class="tool-btn w-9 sm:w-10 h-9 rounded flex items-center justify-center text-[#787b86] shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1" stroke-width="1.8"/></svg>
       </button>
 
       <!-- Parallel Channel -->
-      <button data-tool="channel" title="Parallel Channel (3 clicks)" class="tool-btn w-10 h-9 rounded flex items-center justify-center text-[#787b86]">
+      <button data-tool="channel" title="Parallel Channel (3 points)" class="tool-btn w-9 sm:w-10 h-9 rounded flex items-center justify-center text-[#787b86] shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="1.8" d="M4 15L16 5M8 19L20 9"/></svg>
       </button>
 
       <!-- Triangle / Wedge -->
-      <button data-tool="triangle" title="Triangle / Pattern Shape (3 clicks)" class="tool-btn w-10 h-9 rounded flex items-center justify-center text-[#787b86]">
+      <button data-tool="triangle" title="Triangle / Pattern (3 points)" class="tool-btn w-9 sm:w-10 h-9 rounded flex items-center justify-center text-[#787b86] shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="12,4 21,19 3,19" stroke-width="1.8" stroke-linejoin="round"/></svg>
       </button>
 
       <!-- Fibonacci Retracement -->
-      <button data-tool="fib" title="Fibonacci Retracement (2 clicks)" class="tool-btn w-10 h-9 rounded flex items-center justify-center text-[#787b86]">
+      <button data-tool="fib" title="Fibonacci Retracement (2 points)" class="tool-btn w-9 sm:w-10 h-9 rounded flex items-center justify-center text-[#787b86] shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="1.6" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
       </button>
 
       <!-- Text Callout -->
-      <button data-tool="text" title="Text Note (1 click)" class="tool-btn w-10 h-9 rounded flex items-center justify-center text-[#787b86] font-serif font-bold text-sm">
+      <button data-tool="text" title="Text Note (1 tap)" class="tool-btn w-9 sm:w-10 h-9 rounded flex items-center justify-center text-[#787b86] font-serif font-bold text-sm shrink-0">
         T
       </button>
 
-      <div class="w-6 border-t border-[#2a2e39] my-1"></div>
+      <div class="w-6 border-t border-[#2a2e39] my-0.5 shrink-0"></div>
 
       <!-- Color Swatch -->
-      <div class="flex flex-col items-center space-y-1.5 py-1">
+      <div class="flex flex-col items-center space-y-1.5 py-1 shrink-0">
         <button data-color="#2962ff" class="color-btn w-4 h-4 rounded-full bg-[#2962ff] ring-2 ring-white"></button>
         <button data-color="#089981" class="color-btn w-4 h-4 rounded-full bg-[#089981]"></button>
         <button data-color="#f23645" class="color-btn w-4 h-4 rounded-full bg-[#f23645]"></button>
@@ -147,10 +148,10 @@
       <div class="flex-1"></div>
 
       <!-- Delete Selected / Clear All -->
-      <button id="deleteSelectedBtn" title="Delete Selected Shape (Del)" class="tool-btn w-10 h-9 rounded flex items-center justify-center text-[#787b86] hover:text-[#f23645]">
+      <button id="deleteSelectedBtn" title="Delete Selected Shape" class="tool-btn w-9 sm:w-10 h-9 rounded flex items-center justify-center text-[#787b86] hover:text-[#f23645] shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
-      <button id="clearAllBtn" title="Clear All Drawings" class="tool-btn w-10 h-9 rounded flex items-center justify-center text-[#787b86] hover:text-[#f23645]">
+      <button id="clearAllBtn" title="Clear All Drawings" class="tool-btn w-9 sm:w-10 h-9 rounded flex items-center justify-center text-[#787b86] hover:text-[#f23645] shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
       </button>
     </aside>
@@ -158,8 +159,8 @@
     <!-- CENTER CHART CONTAINER -->
     <main class="flex-1 flex flex-col relative bg-[#131722] overflow-hidden">
       <!-- Floating OHLCV Legend -->
-      <div id="ohlcLegend" class="absolute top-2.5 left-3 z-10 pointer-events-none flex flex-wrap items-center gap-3 text-xs bg-[#131722cc] px-2 py-1 rounded">
-        <span id="legendSymbol" class="font-bold text-white text-sm">BTCUSDT · 1H</span>
+      <div id="ohlcLegend" class="absolute top-2 left-2.5 z-10 pointer-events-none flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[11px] sm:text-xs bg-[#131722cc] px-2 py-1 rounded max-w-[75%]">
+        <span id="legendSymbol" class="font-bold text-white text-xs sm:text-sm">BTCUSDT · 1H</span>
         <span class="text-[#787b86]">O <span id="legO" class="text-white font-mono">-</span></span>
         <span class="text-[#787b86]">H <span id="legH" class="text-white font-mono">-</span></span>
         <span class="text-[#787b86]">L <span id="legL" class="text-white font-mono">-</span></span>
@@ -168,33 +169,35 @@
       </div>
 
       <!-- Floating Expand Pill (Visible when Right Sidebar is Collapsed) -->
-      <button id="floatingExpandBtn" title="Show Watchlist & Community Panel (Alt+W)"
-        class="hidden absolute top-2.5 right-16 z-20 bg-[#1e222d] hover:bg-[#2a2e39] border border-[#2a2e39] text-xs text-[#d1d4dc] hover:text-white px-2.5 py-1 rounded shadow-lg flex items-center gap-1.5 transition">
+      <button id="floatingExpandBtn" title="Show Watchlist & Community Panel"
+        class="hidden absolute top-2 right-16 z-20 bg-[#1e222d] hover:bg-[#2a2e39] border border-[#2a2e39] text-xs text-[#d1d4dc] hover:text-white px-2.5 py-1 rounded shadow-lg flex items-center gap-1 transition">
         <svg class="w-3.5 h-3.5 text-[#2962ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         Watchlist
       </button>
 
-      <!-- Active Tool Helper Banner -->
-      <div id="toolHint" class="hidden absolute bottom-8 left-1/2 -translate-x-1/2 z-20 bg-[#1e222d] border border-[#2962ff] text-xs text-white px-3 py-1.5 rounded-full shadow-lg">
-        Click on the chart to place point 1
+      <!-- Active Tool Helper Banner (With Tappable Mobile Cancel Button) -->
+      <div id="toolHint" class="hidden absolute bottom-8 left-1/2 -translate-x-1/2 z-20 bg-[#1e222d] border border-[#2962ff] text-xs text-white pl-3 pr-1.5 py-1 rounded-full shadow-lg flex items-center gap-2 whitespace-nowrap">
+        <span id="toolHintText">Tap point 1 of 2</span>
+        <button id="cancelToolBtn" class="bg-[#2a2e39] hover:bg-[#f23645] text-[11px] px-2 py-0.5 rounded-full text-white font-medium">Cancel</button>
       </div>
 
-      <!-- Main Price Chart + Interactive Shapes Canvas Overlay -->
+      <!-- Main Price Chart + Interactive Touch/Mouse Shapes Overlay -->
       <div id="mainChartWrapper" class="relative flex-1 w-full">
         <div id="mainChart" class="w-full h-full"></div>
-        <canvas id="drawingCanvas" class="absolute inset-0 z-10 pointer-events-none"></canvas>
+        <!-- pointer-events toggled dynamically so chart pans normally in cursor mode, and captures all touch/mouse input in drawing/drag mode -->
+        <canvas id="drawingCanvas" class="absolute inset-0 z-10 pointer-events-none" style="touch-action: none;"></canvas>
       </div>
 
       <!-- Optional RSI Sub-Pane -->
-      <div id="rsiWrapper" class="hidden h-36 border-t border-[#2a2e39] relative w-full shrink-0">
+      <div id="rsiWrapper" class="hidden h-32 sm:h-36 border-t border-[#2a2e39] relative w-full shrink-0">
         <div class="absolute top-1 left-3 z-10 text-[11px] text-[#a855f7] font-semibold pointer-events-none">RSI (14)</div>
         <div id="rsiChart" class="w-full h-full"></div>
       </div>
     </main>
 
     <!-- RIGHT SIDEBAR: WATCHLIST & COMMUNITY SETUPS -->
-    <aside id="rightSidebar" class="w-72 bg-[#131722] border-l border-[#2a2e39] flex flex-col shrink-0 z-20 transition-all duration-150">
-      <!-- Watchlist Section (Individually Collapsible) -->
+    <aside id="rightSidebar" class="w-64 sm:w-72 bg-[#131722] border-l border-[#2a2e39] flex flex-col shrink-0 z-20 absolute sm:relative right-0 top-0 bottom-0 shadow-2xl sm:shadow-none">
+      <!-- Watchlist Section -->
       <div id="watchlistSection" class="flex-1 flex flex-col min-h-0 border-b border-[#2a2e39]">
         <div class="px-3 py-2 border-b border-[#2a2e39] flex items-center justify-between bg-[#131722]">
           <button id="toggleWatchlistBodyBtn" class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#d1d4dc] hover:text-white">
@@ -203,7 +206,7 @@
           </button>
           <div class="flex items-center gap-2">
             <button id="addWatchlistBtn" class="text-xs text-[#2962ff] hover:underline">+ Add</button>
-            <button id="collapseSidebarBtn" title="Hide Sidebar for Full Chart View (Alt+W)" class="p-1 rounded hover:bg-[#2a2e39] text-[#787b86] hover:text-white">
+            <button id="collapseSidebarBtn" title="Hide Sidebar for Full Chart View" class="p-1 rounded hover:bg-[#2a2e39] text-[#787b86] hover:text-white">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             </button>
           </div>
@@ -244,27 +247,30 @@
   </div>
 
   <!-- Toast Notification -->
-  <div id="toast" class="fixed bottom-4 right-4 bg-[#2962ff] text-white text-xs font-medium px-3.5 py-2 rounded shadow-xl opacity-0 pointer-events-none transition-opacity duration-200 z-50"></div>
+  <div id="toast" class="fixed bottom-12 right-4 bg-[#2962ff] text-white text-xs font-medium px-3.5 py-2 rounded shadow-xl opacity-0 pointer-events-none transition-opacity duration-200 z-50"></div>
 
   <script>
     // =========================================================================
-    // 1. APPLICATION STATE (ZERO-COST CLIENT-SIDE STORAGE + URL HASH)
+    // 1. APPLICATION STATE
     // =========================================================================
+    const isMobile = window.innerWidth < 640;
     const state = {
       symbol: 'BTCUSDT',
       timeframe: '1h',
       candles: [],
       indicators: { sma: true, ema: false, rsi: false },
-      activeTool: 'cursor', // cursor | trendline | ray | hline | vline | rect | channel | triangle | fib | text
+      activeTool: 'cursor',
       activeColor: '#2962ff',
-      drawings: [],         // Persisted shapes anchored to { time, price }
-      draftDrawing: null,   // In-progress multi-click shape
+      drawings: [],
+      draftDrawing: null,
       selectedId: null,
-      dragging: null,       // { id, pointIndex }
-      hoverPoint: null,     // { time, price, x, y }
+      dragging: null,
+      hoverPoint: null,
       watchlist: JSON.parse(localStorage.getItem('tv_watchlist') || '["BTCUSDT","ETHUSDT","SOLUSDT","BNBUSDT","XRPUSDT","DOGEUSDT"]'),
       ideas: JSON.parse(localStorage.getItem('tv_ideas') || '[]'),
-      sidebarCollapsed: localStorage.getItem('tv_sidebar_collapsed') === 'true',
+      sidebarCollapsed: localStorage.getItem('tv_sidebar_collapsed') !== null
+        ? localStorage.getItem('tv_sidebar_collapsed') === 'true'
+        : isMobile,
       watchlistCollapsed: localStorage.getItem('tv_watchlist_collapsed') === 'true',
       ws: null,
       simInterval: null
@@ -325,7 +331,6 @@
     const smaSeries = chart.addLineSeries({ color: '#f59e0b', lineWidth: 1.5, priceLineVisible: false, lastValueVisible: false });
     const emaSeries = chart.addLineSeries({ color: '#3b82f6', lineWidth: 1.5, priceLineVisible: false, lastValueVisible: false });
 
-    // RSI Pane
     const rsiChartEl = document.getElementById('rsiChart');
     const rsiChart = LightweightCharts.createChart(rsiChartEl, {
       layout: { background: { color: '#131722' }, textColor: '#787b86', fontSize: 10 },
@@ -337,13 +342,11 @@
     rsiSeries.createPriceLine({ price: 70, color: '#f2364566', lineWidth: 1, lineStyle: 2, axisLabelVisible: true });
     rsiSeries.createPriceLine({ price: 30, color: '#08998166', lineWidth: 1, lineStyle: 2, axisLabelVisible: true });
 
-    // Sync time scales between Main Chart and RSI
     chart.timeScale().subscribeVisibleLogicalRangeChange(range => {
       if (range && state.indicators.rsi) rsiChart.timeScale().setVisibleLogicalRange(range);
       renderShapes();
     });
 
-    // Resize Observer (automatically expands chart when right sidebar collapses!)
     const resizeObserver = new ResizeObserver(() => {
       chart.applyOptions({ width: mainChartEl.clientWidth, height: mainChartEl.clientHeight });
       rsiChart.applyOptions({ width: rsiChartEl.clientWidth, height: rsiChartEl.clientHeight });
@@ -353,11 +356,9 @@
     resizeObserver.observe(document.getElementById('mainChartWrapper'));
     resizeObserver.observe(document.getElementById('rsiWrapper'));
 
-    // OHLCV Legend Updates
     chart.subscribeCrosshairMove(param => {
       if (!param || !param.time || !param.seriesData.get(candleSeries)) return;
-      const bar = param.seriesData.get(candleSeries);
-      updateLegend(bar);
+      updateLegend(param.seriesData.get(candleSeries));
     });
 
     function updateLegend(bar) {
@@ -374,13 +375,12 @@
     }
 
     // =========================================================================
-    // 3. CLIENT-SIDE TECHNICAL INDICATORS (ZERO SERVER COST)
+    // 3. CLIENT-SIDE TECHNICAL INDICATORS
     // =========================================================================
     function computeIndicators() {
       const data = state.candles;
       if (!data.length) return;
 
-      // SMA 20
       const smaData = [];
       for (let i = 19; i < data.length; i++) {
         let sum = 0;
@@ -389,7 +389,6 @@
       }
       smaSeries.setData(state.indicators.sma ? smaData : []);
 
-      // EMA 50
       const emaData = [];
       const k = 2 / (50 + 1);
       let ema = data[0].close;
@@ -399,7 +398,6 @@
       }
       emaSeries.setData(state.indicators.ema ? emaData : []);
 
-      // RSI 14
       const rsiData = [];
       let gains = 0, losses = 0;
       for (let i = 1; i < data.length; i++) {
@@ -423,17 +421,22 @@
     }
 
     // =========================================================================
-    // 4. INTERACTIVE SHAPES & LINES CANVAS ENGINE (ANCHORED TO TIME & PRICE)
+    // 4. UNIFIED TOUCH & MOUSE SHAPES CANVAS ENGINE (POINTER EVENTS)
     // =========================================================================
     const canvas = document.getElementById('drawingCanvas');
     const ctx = canvas.getContext('2d');
+    const wrapperEl = document.getElementById('mainChartWrapper');
 
     function syncCanvasSize() {
-      const wrapper = document.getElementById('mainChartWrapper');
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = wrapper.clientWidth * dpr;
-      canvas.height = wrapper.clientHeight * dpr;
+      canvas.width = wrapperEl.clientWidth * dpr;
+      canvas.height = wrapperEl.clientHeight * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function updateCanvasPointerCapture() {
+      const shouldCapture = state.activeTool !== 'cursor' || state.dragging !== null;
+      canvas.style.pointerEvents = shouldCapture ? 'auto' : 'none';
     }
 
     function pixelToChart(x, y) {
@@ -474,7 +477,7 @@
       ctx.save();
       ctx.strokeStyle = shape.color;
       ctx.fillStyle = shape.color + '29';
-      ctx.lineWidth = isSelected ? 2.5 : 1.8;
+      ctx.lineWidth = isSelected ? 2.6 : 1.9;
       if (isDraft) ctx.setLineDash([5, 4]);
 
       switch (shape.type) {
@@ -598,10 +601,10 @@
         ctx.setLineDash([]);
         pts.forEach(p => {
           ctx.beginPath();
-          ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
           ctx.fillStyle = '#131722';
           ctx.fill();
-          ctx.lineWidth = 2;
+          ctx.lineWidth = 2.2;
           ctx.strokeStyle = '#ffffff';
           ctx.stroke();
         });
@@ -631,12 +634,14 @@
     }
 
     function hitTestShapes(x, y) {
+      const hitRadius = 18;
+
       if (state.selectedId) {
         const sel = state.drawings.find(d => d.id === state.selectedId);
         if (sel) {
           const pts = sel.points.map(chartToPixel);
           for (let i = 0; i < pts.length; i++) {
-            if (pts[i] && Math.hypot(x - pts[i].x, y - pts[i].y) <= 9) {
+            if (pts[i] && Math.hypot(x - pts[i].x, y - pts[i].y) <= hitRadius) {
               return { drawing: sel, pointIndex: i };
             }
           }
@@ -648,32 +653,30 @@
         const pts = d.points.map(chartToPixel);
         if (pts.some(p => p === null)) continue;
 
-        if (d.type === 'hline' && Math.abs(y - pts[0].y) <= 7) return { drawing: d, pointIndex: null };
-        if (d.type === 'vline' && Math.abs(x - pts[0].x) <= 7) return { drawing: d, pointIndex: null };
-        if (d.type === 'text' && Math.hypot(x - pts[0].x, y - pts[0].y) <= 24) return { drawing: d, pointIndex: 0 };
+        if (d.type === 'hline' && Math.abs(y - pts[0].y) <= 14) return { drawing: d, pointIndex: null };
+        if (d.type === 'vline' && Math.abs(x - pts[0].x) <= 14) return { drawing: d, pointIndex: null };
+        if (d.type === 'text' && Math.hypot(x - pts[0].x, y - pts[0].y) <= 28) return { drawing: d, pointIndex: 0 };
 
         if (pts.length >= 2) {
           if (d.type === 'rect' || d.type === 'fib') {
-            const minX = Math.min(pts[0].x, pts[1].x) - 6;
-            const maxX = Math.max(pts[0].x, pts[1].x) + 6;
-            const minY = Math.min(pts[0].y, pts[1].y) - 6;
-            const maxY = Math.max(pts[0].y, pts[1].y) + 6;
+            const minX = Math.min(pts[0].x, pts[1].x) - 10;
+            const maxX = Math.max(pts[0].x, pts[1].x) + 10;
+            const minY = Math.min(pts[0].y, pts[1].y) - 10;
+            const maxY = Math.max(pts[0].y, pts[1].y) + 10;
             if (x >= minX && x <= maxX && y >= minY && y <= maxY) return { drawing: d, pointIndex: null };
-          } else if (distToSegment(x, y, pts[0].x, pts[0].y, pts[1].x, pts[1].y) <= 8) {
+          } else if (distToSegment(x, y, pts[0].x, pts[0].y, pts[1].x, pts[1].y) <= 14) {
             return { drawing: d, pointIndex: null };
           }
         }
-        if (pts.length === 3 && distToSegment(x, y, pts[1].x, pts[1].y, pts[2].x, pts[2].y) <= 8) {
+        if (pts.length === 3 && distToSegment(x, y, pts[1].x, pts[1].y, pts[2].x, pts[2].y) <= 14) {
           return { drawing: d, pointIndex: null };
         }
       }
       return null;
     }
 
-    const wrapperEl = document.getElementById('mainChartWrapper');
-
-    wrapperEl.addEventListener('mousedown', (e) => {
-      if (e.button !== 0) return;
+    function handlePointerStart(e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
       const rect = wrapperEl.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
@@ -685,11 +688,17 @@
         state.selectedId = hit ? hit.drawing.id : null;
         if (hit && hit.pointIndex !== null) {
           state.dragging = { id: hit.drawing.id, pointIndex: hit.pointIndex };
+          updateCanvasPointerCapture();
+          if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
           chart.applyOptions({ handleScroll: false, handleScale: false });
         }
         renderShapes();
         return;
       }
+
+      e.preventDefault();
+      e.stopPropagation();
+      if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
 
       const needed = REQUIRED_POINTS[state.activeTool];
       if (!state.draftDrawing) {
@@ -716,6 +725,7 @@
           color: state.activeColor,
           points: [chartPt]
         };
+        state.hoverPoint = { ...chartPt, x, y };
 
         if (needed === 1) {
           state.drawings.push(state.draftDrawing);
@@ -723,6 +733,7 @@
           state.draftDrawing = null;
           saveDrawingsLocal();
           setActiveTool('cursor');
+          showToast('Line placed');
         } else {
           updateToolHint();
         }
@@ -734,14 +745,15 @@
           state.draftDrawing = null;
           saveDrawingsLocal();
           setActiveTool('cursor');
+          showToast('Shape placed — drag white handles to adjust');
         } else {
           updateToolHint();
         }
       }
       renderShapes();
-    });
+    }
 
-    wrapperEl.addEventListener('mousemove', (e) => {
+    function handlePointerMove(e) {
       const rect = wrapperEl.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
@@ -751,6 +763,7 @@
       state.hoverPoint = { ...chartPt, x, y };
 
       if (state.dragging) {
+        e.preventDefault();
         const d = state.drawings.find(item => item.id === state.dragging.id);
         if (d) {
           d.points[state.dragging.pointIndex] = chartPt;
@@ -760,22 +773,34 @@
       }
 
       if (state.draftDrawing) {
+        e.preventDefault();
         renderShapes();
-      } else if (state.activeTool === 'cursor') {
+      } else if (state.activeTool === 'cursor' && e.pointerType === 'mouse') {
         const hit = hitTestShapes(x, y);
         wrapperEl.style.cursor = hit ? (hit.pointIndex !== null ? 'grab' : 'pointer') : 'crosshair';
       }
-    });
+    }
 
-    window.addEventListener('mouseup', () => {
+    function handlePointerEnd() {
       if (state.dragging) {
         state.dragging = null;
+        updateCanvasPointerCapture();
         chart.applyOptions({ handleScroll: true, handleScale: true });
         saveDrawingsLocal();
       }
-    });
+    }
 
-    // Keyboard Shortcuts (Esc, Delete, Alt+W to toggle Watchlist/Panel)
+    canvas.addEventListener('pointerdown', handlePointerStart);
+    canvas.addEventListener('pointermove', handlePointerMove);
+    canvas.addEventListener('pointerup', handlePointerEnd);
+    wrapperEl.addEventListener('pointerdown', (e) => {
+      if (state.activeTool === 'cursor') handlePointerStart(e);
+    });
+    wrapperEl.addEventListener('pointermove', (e) => {
+      if (state.activeTool === 'cursor') handlePointerMove(e);
+    });
+    window.addEventListener('pointerup', handlePointerEnd);
+
     window.addEventListener('keydown', (e) => {
       if (e.altKey && e.key.toLowerCase() === 'w') {
         e.preventDefault();
@@ -957,7 +982,7 @@
 
     function setFeedBadge(isLive, label) {
       const el = document.getElementById('feedStatus');
-      el.className = `text-[11px] px-2 py-0.5 rounded flex items-center gap-1.5 ${isLive ? 'bg-[#08998126] text-[#089981]' : 'bg-[#f59e0b26] text-[#f59e0b]'}`;
+      el.className = `hidden sm:flex text-[11px] px-2 py-0.5 rounded items-center gap-1.5 ${isLive ? 'bg-[#08998126] text-[#089981]' : 'bg-[#f59e0b26] text-[#f59e0b]'}`;
       el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${isLive ? 'bg-[#089981] animate-pulse' : 'bg-[#f59e0b]'}"></span> ${label}`;
     }
 
@@ -972,20 +997,29 @@
         btn.classList.toggle('text-[#787b86]', btn.dataset.tool !== tool);
       });
       wrapperEl.style.cursor = tool === 'cursor' ? 'crosshair' : 'cell';
+      updateCanvasPointerCapture();
       updateToolHint();
     }
 
     function updateToolHint() {
       const hint = document.getElementById('toolHint');
+      const hintText = document.getElementById('toolHintText');
       if (state.activeTool === 'cursor') {
         hint.classList.add('hidden');
         return;
       }
       const needed = REQUIRED_POINTS[state.activeTool];
       const placed = state.draftDrawing ? state.draftDrawing.points.length : 0;
-      hint.textContent = `Tool: ${state.activeTool.toUpperCase()} — Click point ${placed + 1} of ${needed} (Esc to cancel)`;
+      hintText.textContent = `${state.activeTool.toUpperCase()}: Tap point ${placed + 1} of ${needed}`;
       hint.classList.remove('hidden');
     }
+
+    document.getElementById('cancelToolBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      state.draftDrawing = null;
+      setActiveTool('cursor');
+      renderShapes();
+    });
 
     document.querySelectorAll('.tool-btn[data-tool]').forEach(btn => {
       btn.addEventListener('click', () => setActiveTool(btn.dataset.tool));
@@ -1004,7 +1038,7 @@
     });
 
     document.getElementById('deleteSelectedBtn').addEventListener('click', () => {
-      if (!state.selectedId) return showToast('Click a shape on the chart first to select it');
+      if (!state.selectedId) return showToast('Tap a shape on the chart first to select it');
       state.drawings = state.drawings.filter(d => d.id !== state.selectedId);
       state.selectedId = null;
       saveDrawingsLocal();
@@ -1069,7 +1103,10 @@
           <span id="wl-price-${sym}" class="text-right font-mono text-[#d1d4dc]">...</span>
           <span id="wl-chg-${sym}" class="text-right font-mono text-[#787b86]">-</span>
         `;
-        row.onclick = () => loadMarketData(sym, state.timeframe);
+        row.onclick = () => {
+          loadMarketData(sym, state.timeframe);
+          if (window.innerWidth < 640) setSidebarCollapsed(true);
+        };
         container.appendChild(row);
       }
       refreshWatchlistPrices();
@@ -1123,11 +1160,12 @@
           <div class="text-xs text-[#d1d4dc] mb-1.5">${idea.title}</div>
           <div class="flex items-center justify-between text-[10px] text-[#787b86]">
             <span>${idea.drawings.length} shape(s)</span>
-            <span class="text-[#2962ff]">Click to load →</span>
+            <span class="text-[#2962ff]">Tap to load →</span>
           </div>
         `;
         card.onclick = () => {
           loadMarketData(idea.symbol, idea.timeframe, JSON.parse(JSON.stringify(idea.drawings)));
+          if (window.innerWidth < 640) setSidebarCollapsed(true);
           showToast(`Loaded "${idea.title}"`);
         };
         feed.appendChild(card);
@@ -1164,7 +1202,7 @@
       const shareUrl = `${window.location.origin}${window.location.pathname}#setup=${encoded}`;
       navigator.clipboard?.writeText(shareUrl);
       window.location.hash = `setup=${encoded}`;
-      showToast('Shareable chart + shapes link copied to clipboard!');
+      showToast('Shareable chart + shapes link copied!');
     });
 
     function checkUrlSetup() {
