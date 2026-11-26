@@ -64,6 +64,15 @@
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
         Share Setup
       </button>
+      <!-- Toggle Right Sidebar (Watchlist & Community Panel) -->
+      <button id="toggleSidebarBtn" title="Collapse / Expand Watchlist & Panel (Alt+W)"
+        class="p-1.5 rounded border border-[#2a2e39] bg-[#1e222d] hover:bg-[#2a2e39] text-[#2962ff] transition flex items-center gap-1 text-xs">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <rect x="3" y="4" width="18" height="16" rx="2" stroke-width="1.8"/>
+          <path stroke-width="1.8" d="M15 4v16"/>
+        </svg>
+        <span class="hidden md:inline font-medium" id="sidebarToggleLabel">Panel</span>
+      </button>
     </div>
   </header>
 
@@ -158,6 +167,13 @@
         <span id="legChg" class="font-mono font-semibold">0.00%</span>
       </div>
 
+      <!-- Floating Expand Pill (Visible when Right Sidebar is Collapsed) -->
+      <button id="floatingExpandBtn" title="Show Watchlist & Community Panel (Alt+W)"
+        class="hidden absolute top-2.5 right-16 z-20 bg-[#1e222d] hover:bg-[#2a2e39] border border-[#2a2e39] text-xs text-[#d1d4dc] hover:text-white px-2.5 py-1 rounded shadow-lg flex items-center gap-1.5 transition">
+        <svg class="w-3.5 h-3.5 text-[#2962ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Watchlist
+      </button>
+
       <!-- Active Tool Helper Banner -->
       <div id="toolHint" class="hidden absolute bottom-8 left-1/2 -translate-x-1/2 z-20 bg-[#1e222d] border border-[#2962ff] text-xs text-white px-3 py-1.5 rounded-full shadow-lg">
         Click on the chart to place point 1
@@ -177,23 +193,33 @@
     </main>
 
     <!-- RIGHT SIDEBAR: WATCHLIST & COMMUNITY SETUPS -->
-    <aside class="w-72 bg-[#131722] border-l border-[#2a2e39] flex flex-col shrink-0 z-20">
-      <!-- Watchlist -->
-      <div class="flex-1 flex flex-col min-h-0 border-b border-[#2a2e39]">
-        <div class="px-3 py-2 border-b border-[#2a2e39] flex items-center justify-between">
-          <span class="text-xs font-semibold uppercase tracking-wider text-[#787b86]">Watchlist</span>
-          <button id="addWatchlistBtn" class="text-xs text-[#2962ff] hover:underline">+ Add Current</button>
+    <aside id="rightSidebar" class="w-72 bg-[#131722] border-l border-[#2a2e39] flex flex-col shrink-0 z-20 transition-all duration-150">
+      <!-- Watchlist Section (Individually Collapsible) -->
+      <div id="watchlistSection" class="flex-1 flex flex-col min-h-0 border-b border-[#2a2e39]">
+        <div class="px-3 py-2 border-b border-[#2a2e39] flex items-center justify-between bg-[#131722]">
+          <button id="toggleWatchlistBodyBtn" class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#d1d4dc] hover:text-white">
+            <svg id="watchlistChevron" class="w-3.5 h-3.5 text-[#787b86] transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            Watchlist
+          </button>
+          <div class="flex items-center gap-2">
+            <button id="addWatchlistBtn" class="text-xs text-[#2962ff] hover:underline">+ Add</button>
+            <button id="collapseSidebarBtn" title="Hide Sidebar for Full Chart View (Alt+W)" class="p-1 rounded hover:bg-[#2a2e39] text-[#787b86] hover:text-white">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
         </div>
-        <div class="grid grid-cols-3 px-3 py-1.5 text-[11px] text-[#787b86] border-b border-[#2a2e39]/60">
-          <span>Symbol</span>
-          <span class="text-right">Last</span>
-          <span class="text-right">24h %</span>
+        <div id="watchlistBody" class="flex-1 flex flex-col min-h-0">
+          <div class="grid grid-cols-3 px-3 py-1.5 text-[11px] text-[#787b86] border-b border-[#2a2e39]/60">
+            <span>Symbol</span>
+            <span class="text-right">Last</span>
+            <span class="text-right">24h %</span>
+          </div>
+          <div id="watchlistContainer" class="flex-1 overflow-y-auto divide-y divide-[#2a2e39]/40"></div>
         </div>
-        <div id="watchlistContainer" class="flex-1 overflow-y-auto divide-y divide-[#2a2e39]/40"></div>
       </div>
 
       <!-- Community Ideas Feed -->
-      <div class="h-1/2 flex flex-col min-h-0">
+      <div id="communitySection" class="h-1/2 flex flex-col min-h-0">
         <div class="px-3 py-2 border-b border-[#2a2e39] flex items-center justify-between">
           <span class="text-xs font-semibold uppercase tracking-wider text-[#787b86]">Community Analysis</span>
           <span class="text-[10px] text-[#787b86]" id="shapeCountBadge">0 shapes</span>
@@ -238,6 +264,8 @@
       hoverPoint: null,     // { time, price, x, y }
       watchlist: JSON.parse(localStorage.getItem('tv_watchlist') || '["BTCUSDT","ETHUSDT","SOLUSDT","BNBUSDT","XRPUSDT","DOGEUSDT"]'),
       ideas: JSON.parse(localStorage.getItem('tv_ideas') || '[]'),
+      sidebarCollapsed: localStorage.getItem('tv_sidebar_collapsed') === 'true',
+      watchlistCollapsed: localStorage.getItem('tv_watchlist_collapsed') === 'true',
       ws: null,
       simInterval: null
     };
@@ -315,7 +343,7 @@
       renderShapes();
     });
 
-    // Resize Observer
+    // Resize Observer (automatically expands chart when right sidebar collapses!)
     const resizeObserver = new ResizeObserver(() => {
       chart.applyOptions({ width: mainChartEl.clientWidth, height: mainChartEl.clientHeight });
       rsiChart.applyOptions({ width: rsiChartEl.clientWidth, height: rsiChartEl.clientHeight });
@@ -408,7 +436,6 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
-    // Convert screen (x, y) -> chart { time, price } (supports extrapolation into future whitespace)
     function pixelToChart(x, y) {
       const price = candleSeries.coordinateToPrice(y);
       if (price === null) return null;
@@ -425,7 +452,6 @@
       return time !== null ? { time, price } : null;
     }
 
-    // Convert chart { time, price } -> screen { x, y }
     function chartToPixel(pt) {
       const y = candleSeries.priceToCoordinate(pt.price);
       let x = chart.timeScale().timeToCoordinate(pt.time);
@@ -447,7 +473,7 @@
       const h = canvas.clientHeight;
       ctx.save();
       ctx.strokeStyle = shape.color;
-      ctx.fillStyle = shape.color + '29'; // ~16% alpha fill
+      ctx.fillStyle = shape.color + '29';
       ctx.lineWidth = isSelected ? 2.5 : 1.8;
       if (isDraft) ctx.setLineDash([5, 4]);
 
@@ -477,7 +503,6 @@
           ctx.moveTo(0, pts[0].y);
           ctx.lineTo(w, pts[0].y);
           ctx.stroke();
-          // Price tag badge
           ctx.fillStyle = shape.color;
           ctx.fillRect(w - 68, pts[0].y - 9, 66, 18);
           ctx.fillStyle = '#ffffff';
@@ -517,7 +542,6 @@
         }
         case 'channel': {
           if (pts.length < 2) break;
-          // Base trendline
           ctx.beginPath();
           ctx.moveTo(pts[0].x, pts[0].y);
           ctx.lineTo(pts[1].x, pts[1].y);
@@ -531,7 +555,6 @@
             ctx.moveTo(p2a.x, p2a.y);
             ctx.lineTo(p2b.x, p2b.y);
             ctx.stroke();
-            // Fill channel polygon
             ctx.beginPath();
             ctx.moveTo(pts[0].x, pts[0].y);
             ctx.lineTo(pts[1].x, pts[1].y);
@@ -571,7 +594,6 @@
         }
       }
 
-      // Draw anchor handles if selected or drafting
       if (isSelected || isDraft) {
         ctx.setLineDash([]);
         pts.forEach(p => {
@@ -600,7 +622,6 @@
       }
     }
 
-    // Distance helper for hit-testing lines & shapes
     function distToSegment(px, py, x1, y1, x2, y2) {
       const l2 = (x2 - x1) ** 2 + (y2 - y1) ** 2;
       if (l2 === 0) return Math.hypot(px - x1, py - y1);
@@ -610,7 +631,6 @@
     }
 
     function hitTestShapes(x, y) {
-      // 1. Check anchor handles of currently selected shape first
       if (state.selectedId) {
         const sel = state.drawings.find(d => d.id === state.selectedId);
         if (sel) {
@@ -623,7 +643,6 @@
         }
       }
 
-      // 2. Check shape bodies in reverse order (topmost first)
       for (let i = state.drawings.length - 1; i >= 0; i--) {
         const d = state.drawings[i];
         const pts = d.points.map(chartToPixel);
@@ -651,7 +670,6 @@
       return null;
     }
 
-    // Canvas Mouse Events for Drawing & Editing
     const wrapperEl = document.getElementById('mainChartWrapper');
 
     wrapperEl.addEventListener('mousedown', (e) => {
@@ -662,7 +680,6 @@
       const chartPt = pixelToChart(x, y);
       if (!chartPt) return;
 
-      // Mode A: Cursor / Select / Drag Handle
       if (state.activeTool === 'cursor') {
         const hit = hitTestShapes(x, y);
         state.selectedId = hit ? hit.drawing.id : null;
@@ -674,7 +691,6 @@
         return;
       }
 
-      // Mode B: Placing a New Shape or Line
       const needed = REQUIRED_POINTS[state.activeTool];
       if (!state.draftDrawing) {
         if (state.activeTool === 'text') {
@@ -759,8 +775,13 @@
       }
     });
 
-    // Keyboard Shortcuts (Esc to cancel, Delete/Backspace to remove selected shape)
+    // Keyboard Shortcuts (Esc, Delete, Alt+W to toggle Watchlist/Panel)
     window.addEventListener('keydown', (e) => {
+      if (e.altKey && e.key.toLowerCase() === 'w') {
+        e.preventDefault();
+        setSidebarCollapsed(!state.sidebarCollapsed);
+        return;
+      }
       if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
       if (e.key === 'Escape') {
         state.draftDrawing = null;
@@ -777,7 +798,52 @@
     });
 
     // =========================================================================
-    // 5. LIVE MARKET DATA (BINANCE PUBLIC API + WEBSOCKETS + FALLBACK)
+    // 5. COLLAPSIBLE WATCHLIST & FULL-WINDOW CHART FOCUS MODE
+    // =========================================================================
+    function setSidebarCollapsed(collapsed) {
+      state.sidebarCollapsed = collapsed;
+      localStorage.setItem('tv_sidebar_collapsed', collapsed);
+
+      const sidebar = document.getElementById('rightSidebar');
+      const floatingBtn = document.getElementById('floatingExpandBtn');
+      const topBtn = document.getElementById('toggleSidebarBtn');
+
+      sidebar.classList.toggle('hidden', collapsed);
+      floatingBtn.classList.toggle('hidden', !collapsed);
+      topBtn.classList.toggle('text-[#2962ff]', !collapsed);
+      topBtn.classList.toggle('text-[#787b86]', collapsed);
+    }
+
+    function setWatchlistCollapsed(collapsed) {
+      state.watchlistCollapsed = collapsed;
+      localStorage.setItem('tv_watchlist_collapsed', collapsed);
+
+      const body = document.getElementById('watchlistBody');
+      const section = document.getElementById('watchlistSection');
+      const community = document.getElementById('communitySection');
+      const chevron = document.getElementById('watchlistChevron');
+
+      body.classList.toggle('hidden', collapsed);
+      chevron.style.transform = collapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
+
+      if (collapsed) {
+        section.classList.remove('flex-1');
+        community.classList.remove('h-1/2');
+        community.classList.add('flex-1');
+      } else {
+        section.classList.add('flex-1');
+        community.classList.add('h-1/2');
+        community.classList.remove('flex-1');
+      }
+    }
+
+    document.getElementById('toggleSidebarBtn').addEventListener('click', () => setSidebarCollapsed(!state.sidebarCollapsed));
+    document.getElementById('collapseSidebarBtn').addEventListener('click', () => setSidebarCollapsed(true));
+    document.getElementById('floatingExpandBtn').addEventListener('click', () => setSidebarCollapsed(false));
+    document.getElementById('toggleWatchlistBodyBtn').addEventListener('click', () => setWatchlistCollapsed(!state.watchlistCollapsed));
+
+    // =========================================================================
+    // 6. LIVE MARKET DATA (BINANCE PUBLIC API + WEBSOCKETS + FALLBACK)
     // =========================================================================
     async function loadMarketData(symbol, timeframe, customDrawings = null) {
       state.symbol = symbol.toUpperCase().trim();
@@ -805,7 +871,6 @@
         setFeedBadge(true, 'LIVE');
         connectBinanceWS();
       } catch (err) {
-        // Fallback realistic generator if offline or restricted network
         state.candles = generateFallbackCandles(300);
         setFeedBadge(false, 'SIMULATED');
         startSimulatedStream();
@@ -897,7 +962,7 @@
     }
 
     // =========================================================================
-    // 6. TOOLBAR, WATCHLIST, COMMUNITY FEED & URL HASH SHARING
+    // 7. TOOLBAR, WATCHLIST, COMMUNITY FEED & URL HASH SHARING
     // =========================================================================
     function setActiveTool(tool) {
       state.activeTool = tool;
@@ -955,7 +1020,6 @@
       showToast('All drawings cleared');
     });
 
-    // Timeframe & Indicator Buttons
     document.querySelectorAll('.tf-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tf-btn').forEach(b => {
@@ -994,7 +1058,6 @@
       renderShapes();
     });
 
-    // Watchlist Rendering + Live 24h Ticker Refresh
     async function renderWatchlist() {
       const container = document.getElementById('watchlistContainer');
       container.innerHTML = '';
@@ -1041,7 +1104,6 @@
       }
     });
 
-    // Community Ideas Feed
     function renderIdeas() {
       const feed = document.getElementById('ideasFeed');
       if (!state.ideas.length) {
@@ -1092,7 +1154,6 @@
       showToast('Chart setup posted to community feed!');
     });
 
-    // Zero-Cost URL Hash Setup Sharing (#setup=...)
     document.getElementById('shareBtn').addEventListener('click', () => {
       const payload = {
         s: state.symbol,
@@ -1124,6 +1185,8 @@
     // Boot Application
     document.getElementById('toggleEmaBtn').style.opacity = '0.45';
     document.getElementById('toggleRsiBtn').style.opacity = '0.45';
+    setSidebarCollapsed(state.sidebarCollapsed);
+    setWatchlistCollapsed(state.watchlistCollapsed);
     syncCanvasSize();
     renderWatchlist();
     renderIdeas();
